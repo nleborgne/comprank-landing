@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Billmatic",
-  description: "The invoicing made easy.",
+  title: "CompRank",
+  description: "Professional competition managing software.",
 };
 
 export default function RootLayout({

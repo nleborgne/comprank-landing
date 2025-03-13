@@ -6,7 +6,7 @@ export default function DemoPage() {
   );
   return (
     <div className="w-full">
-      <DynamicBackgroundPaths />
+      <DynamicBackgroundPaths title="La meilleure expérience de planification de compétition" />
     </div>
   );
 }

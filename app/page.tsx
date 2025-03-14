@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Header } from "@/components/header";
-import { Hero } from "@/components/hero";
+import { BackgroundPaths } from "@/components/ui/background-paths";
 
 export const runtime = "edge";
 
@@ -8,17 +8,7 @@ export default function Page() {
   return (
     <>
       <Header />
-      <Hero />
-      {/*
-      <Problem />
-      <PainSolver />
-      <Heaven />
-      <WhoIsItFor />
-      <HowItWorks />
-      <Benefits />
-      <Features />
-      <Pricing />
-      <FAQ /> */}
+      <BackgroundPaths title="La meilleure expérience de compétition sportive" />
     </>
   );
 }

@@ -1,22 +1,9 @@
-"use client";
-import { Button } from "./ui/button";
+import Link from "next/link";
 
-export const CTA = ({
-  label,
-  size = "default",
-  className,
-}: {
-  label: string;
-  size?: "lg" | "default" | "sm" | "icon" | null;
-  className?: string;
-}) => {
+export const CTA = ({ label }: { label: string }) => {
   return (
-    <Button
-      size={size}
-      onClick={() => (window.location.href = "https://app.comprank.fr")}
-      className={className}
-    >
+    <Link className="btn-primary text-sm" href="https://app.comprank.fr">
       {label}
-    </Button>
+    </Link>
   );
 };

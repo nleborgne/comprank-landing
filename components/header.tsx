@@ -22,7 +22,7 @@ export const Header = () => (
         </div>
       </nav> */}
 
-      <CTA size="default" label="Démarrer" />
+      <CTA label="Démarrer" />
     </div>
   </header>
 );

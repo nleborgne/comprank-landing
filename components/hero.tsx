@@ -9,8 +9,7 @@ export const Hero = () => {
         <div
           className="absolute inset-0 bg-gradient-to-b from-dark-900/90 via-dark-800/80 to-dark-700/70"
           style={{
-            backgroundImage:
-              "url('https://images.pexels.com/photos/16966370/pexels-photo-16966370/free-photo-of-pull-ups-competition-at-gym.jpeg?auto=compress&cs=tinysrgb&w=1600')",
+            backgroundImage: "url('/hero.webp')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             filter: "brightness(0.35) contrast(1.2)",
@@ -20,7 +19,7 @@ export const Hero = () => {
 
       <div className="absolute inset-0 opacity-30 bg-gradient-to-tr from-dark-900 via-primary-900/20 to-dark-900"></div>
 
-      <div className="container-custom relative z-10 pt-20">
+      <div className="container-custom relative z-10 pt-20 motion-preset-blur-right motion-delay-200">
         <div className="max-w-3xl">
           <div className="inline-flex items-center bg-dark-600/80 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6 border border-dark-500">
             <Star size={16} className="text-primary-500 mr-2" />
@@ -30,8 +29,9 @@ export const Hero = () => {
           </div>
 
           <h1 className="mb-6">
-            Élevez Votre <span className="text-primary-500">Expérience</span> de
-            Compétition
+            Propulsez votre{" "}
+            <span className="text-primary-500">Compétition</span> Au Niveau
+            Supérieur
           </h1>
 
           <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
@@ -51,13 +51,13 @@ export const Hero = () => {
 
           <div className="mt-12 flex items-center gap-4">
             <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((id) => (
+              {[1, 2, 3].map((id) => (
                 <Image
                   width={50}
                   height={50}
                   key={id}
-                  src={`https://randomuser.me/api/portraits/men/${id + 30}.jpg`}
-                  alt="User"
+                  src={`/box/box-${id}.webp`}
+                  alt="box"
                   className="w-10 h-10 rounded-full border-2 border-dark-700"
                 />
               ))}

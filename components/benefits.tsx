@@ -1,7 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { CreditCard, Sparkles, LayoutList } from "lucide-react";
-import ConfettiButton from "./confetti-button";
-import { SimpleChat } from "./simple-chat";
+import { LayoutList } from "lucide-react";
 import { DataTable } from "./data-table";
 
 interface BenefitProps {
@@ -50,19 +48,6 @@ export const Benefits = () => (
         Why Choose Billmatic?
       </h2>
       <div className="space-y-12">
-        <BenefitItem
-          title="Get Paid Faster with Seamless Online Payments"
-          description="Billmatic allows you to accept online payments directly through invoices with a secure payment link. Clients can pay quickly and securely via Stripe, and you'll receive instant notifications when payments are processed. This improves cash flow and reduces late payments."
-          component={<ConfettiButton />}
-          icon={<CreditCard className="h-6 w-6" />}
-        />
-        <BenefitItem
-          title="Boost Productivity with AI-Powered Invoice Creation"
-          description="Billmatic's AI assistant guides you through creating invoices by asking you for information through a chat interface. The AI will ask for details about the invoice, such as how much to charge and whether it is a flat rate, hourly rate, or daily rate. This eliminates manual data entry and reduces the risk of errors."
-          component={<SimpleChat />}
-          icon={<Sparkles className="h-6 w-6" />}
-          reverse={true}
-        />
         <BenefitItem
           title="Stay Organised and Efficiently Manage Invoices"
           description="Billmatic makes it easy to send invoices to clients and track invoice statuses. You can filter invoices by status to see which are awaiting payment and which are paid. The system automatically updates the status of invoices, so you don't have to update it manually."

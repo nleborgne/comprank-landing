@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CompRank",
-  description: "Professional competition managing software.",
+  title: "CompRank - Logiciel de gestion de compétitions",
+  description: "Gestion des compétitions et des résultats.",
 };
 
 export default function RootLayout({

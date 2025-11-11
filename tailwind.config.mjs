@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 const {
   default: flattenColorPalette,
 } = require("tailwindcss/lib/util/flattenColorPalette");
 
 /** @type {import('tailwindcss').Config} */
-// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   darkMode: ["class"],
   content: [

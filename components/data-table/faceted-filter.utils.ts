@@ -9,7 +9,6 @@ export const onOptionSelect = ({
   isSelected: boolean;
   selectedValues: Set<string>;
   option: { value: string };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   column: Column<any, any> | undefined;
 }) => {
   if (isSelected) {

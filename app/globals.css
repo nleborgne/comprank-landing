@@ -6,9 +6,11 @@
   html {
     @apply scroll-smooth;
   }
+
   body {
     @apply bg-dark-700 text-gray-100 antialiased;
   }
+
   h1,
   h2,
   h3,
@@ -17,12 +19,15 @@
   h6 {
     @apply font-bold tracking-tight;
   }
+
   h1 {
     @apply text-4xl md:text-5xl lg:text-6xl leading-tight;
   }
+
   h2 {
     @apply text-3xl md:text-4xl lg:text-5xl leading-tight;
   }
+
   h3 {
     @apply text-2xl md:text-3xl leading-tight;
   }
@@ -68,10 +73,12 @@
 
 /* Custom Animations */
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }

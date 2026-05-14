@@ -69,6 +69,10 @@
   .animate-on-scroll.in-view {
     @apply opacity-100 translate-y-0;
   }
+
+  .planner-input {
+    @apply h-10 w-full rounded-md bg-dark-700 px-3 text-base text-white ring-1 ring-dark-500 outline-none transition placeholder:text-gray-600 focus:ring-blue-400 sm:h-9 sm:text-sm;
+  }
 }
 
 /* Custom Animations */

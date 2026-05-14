@@ -1,84 +1,402 @@
-import { ArrowRight, Star } from "lucide-react";
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import {
+  ArrowRight,
+  Star,
+  Medal,
+  Trophy,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Zap,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
-export const Hero = () => {
+interface Athlete {
+  name: string;
+  box: string;
+  points: number;
+  rank: number;
+  rankChange: number;
+  delta: number;
+  highlight: boolean;
+}
+
+const INITIAL_ATHLETES: Athlete[] = [
+  { name: "Camille D.", box: "CrossFit Lyon", points: 386, rank: 1, rankChange: 0, delta: 0, highlight: false },
+  { name: "Antoine L.", box: "Box Marseille", points: 384, rank: 2, rankChange: 0, delta: 0, highlight: false },
+  { name: "Sarah M.", box: "CF Bordeaux", points: 383, rank: 3, rankChange: 0, delta: 0, highlight: false },
+  { name: "Louis P.", box: "CF Nantes", points: 381, rank: 4, rankChange: 0, delta: 0, highlight: false },
+  { name: "Nora B.", box: "CF Toulouse", points: 379, rank: 5, rankChange: 0, delta: 0, highlight: false },
+];
+
+function useAnimatedScores() {
+  const [athletes, setAthletes] = useState(INITIAL_ATHLETES);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAthletes((prev) => {
+        const next = prev.map((a) => {
+          const delta = Math.floor(Math.random() * 11) - 3;
+          return { ...a, points: a.points + delta, delta, highlight: true };
+        });
+
+        const rankMap = new Map(prev.map((a) => [a.name, a.rank]));
+        return [...next]
+          .sort((a, b) => b.points - a.points)
+          .map((a, i) => ({
+            ...a,
+            rankChange: (rankMap.get(a.name) ?? i + 1) - (i + 1),
+            rank: i + 1,
+          }));
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return athletes;
+}
+
+function AnimatedPoints({ value, highlight }: { value: number; highlight: boolean }) {
+  const prevValue = useRef(value);
+  const changed = prevValue.current !== value;
+  const increased = value > prevValue.current;
+  prevValue.current = value;
+
   return (
-    <section className="relative h-screen min-h-[700px] max-h-[900px] flex items-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-dark-900/90 via-dark-800/80 to-dark-700/70"
-          style={{
-            backgroundImage: "url('/hero.webp')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            filter: "brightness(0.35) contrast(1.2)",
-          }}
+    <motion.span
+      key={value}
+      initial={
+        changed
+          ? { scale: 1.25, color: increased ? "#4ade80" : "#f87171" }
+          : false
+      }
+      animate={{ scale: 1, color: "#ffad4a" }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="font-mono font-bold tabular-nums"
+    >
+      {value}
+    </motion.span>
+  );
+}
+
+function PointsDelta({ delta }: { delta: number }) {
+  if (delta === 0) return null;
+  const positive = delta > 0;
+
+  return (
+    <motion.span
+      initial={{ opacity: 0, y: positive ? 6 : -6, scale: 0.8 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.35 }}
+      className={`text-xs font-mono font-semibold tabular-nums ${positive ? "text-green-400" : "text-red-400"}`}
+    >
+      {positive ? "+" : ""}
+      {delta}
+    </motion.span>
+  );
+}
+
+function useCountUp(target: number, duration = 2000) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const increment = target / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [target, duration]);
+
+  return count;
+}
+
+const ease = [0.25, 0.46, 0.45, 0.94] as const;
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.12, duration: 0.5, ease },
+  }),
+};
+
+const fadeInRight = {
+  hidden: { opacity: 0, x: 40 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { delay: 0.4, duration: 0.6, ease },
+  },
+};
+
+function StatCounter({
+  value,
+  suffix,
+  label,
+}: {
+  value: number;
+  suffix: string;
+  label: string;
+}) {
+  const count = useCountUp(value);
+  return (
+    <div className="text-center">
+      <div className="text-2xl font-bold text-white tabular-nums">
+        {count}
+        {suffix}
+      </div>
+      <div className="text-xs text-gray-400">{label}</div>
+    </div>
+  );
+}
+
+function RankChangeIndicator({ rankChange }: { rankChange: number }) {
+  if (rankChange > 0) {
+    return (
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 500, damping: 25 }}
+      >
+        <TrendingUp className="size-3.5 text-green-400" />
+      </motion.div>
+    );
+  }
+  if (rankChange < 0) {
+    return (
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 500, damping: 25 }}
+      >
+        <TrendingDown className="size-3.5 text-red-400" />
+      </motion.div>
+    );
+  }
+  return <Minus className="size-3.5 text-gray-500" />;
+}
+
+function LeaderboardRow({ athlete }: { athlete: Athlete }) {
+  return (
+    <motion.div
+      layout
+      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+      className="relative flex items-center px-5 py-3.5"
+    >
+      {athlete.highlight && (
+        <motion.div
+          initial={{ opacity: 0.15 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 1.5 }}
+          className={`absolute inset-0 ${athlete.delta > 0
+            ? "bg-green-400/10"
+            : athlete.delta < 0
+              ? "bg-red-400/10"
+              : "bg-primary-400/10"
+            }`}
         />
+      )}
+
+      <div className="flex items-center gap-3 w-10">
+        {athlete.rank <= 3 ? (
+          <Medal
+            className={`size-5 ${athlete.rank === 1
+              ? "text-yellow-400"
+              : athlete.rank === 2
+                ? "text-gray-300"
+                : "text-amber-600"
+              }`}
+          />
+        ) : (
+          <span className="text-sm text-gray-500 font-mono tabular-nums">
+            {athlete.rank}
+          </span>
+        )}
       </div>
 
-      <div className="absolute inset-0 opacity-30 bg-gradient-to-tr from-dark-900 via-primary-900/20 to-dark-900"></div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-white">{athlete.name}</div>
+        <div className="text-xs text-gray-500">{athlete.box}</div>
+      </div>
 
-      <div className="container-custom relative z-10 pt-20 motion-preset-blur-right motion-delay-200">
-        <div className="max-w-3xl">
-          <div className="inline-flex items-center bg-dark-600/80 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6 border border-dark-500">
-            <Star size={16} className="text-primary-500 mr-2" />
-            <span className="text-sm font-medium">
-              La plateforme ultime pour les compétitions sportives
-            </span>
-          </div>
+      <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-1.5">
+          <AnimatedPoints
+            value={athlete.points}
+            highlight={athlete.highlight}
+          />
+          <AnimatePresence mode="popLayout">
+            {athlete.highlight && athlete.delta !== 0 && (
+              <PointsDelta key={`${athlete.name}-${athlete.points}`} delta={athlete.delta} />
+            )}
+          </AnimatePresence>
+        </div>
+        <RankChangeIndicator rankChange={athlete.rankChange} />
+      </div>
+    </motion.div>
+  );
+}
 
-          <h1 className="mb-6">
-            Propulsez votre{" "}
-            <span className="text-primary-500">Compétition</span> Au Niveau
-            Supérieur
-          </h1>
+export function Hero() {
+  const athletes = useAnimatedScores();
 
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-            Simplifiez la gestion de vos événements, suivez les performances des
-            athlètes en temps réel et créez des compétitions inoubliables grâce
-            à notre plateforme complète.
-          </p>
+  return (
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-dark-900">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -left-32 size-96 rounded-full bg-primary-500/8 blur-3xl animate-float" />
+        <div className="absolute top-1/2 -right-24 size-80 rounded-full bg-accent-500/6 blur-3xl animate-float [animation-delay:2s]" />
+        <div className="absolute -bottom-16 left-1/3 size-64 rounded-full bg-primary-600/5 blur-3xl animate-float [animation-delay:4s]" />
+      </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="https://app.comprank.fr" className="btn-primary">
-              Démarrer <ArrowRight size={18} className="ml-2" />
-            </Link>
-            <Link href="#features" className="btn-secondary">
-              En savoir plus
-            </Link>
-          </div>
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+        }}
+      />
 
-          <div className="mt-12 flex items-center gap-4">
-            <div className="flex -space-x-2">
-              {[1, 2, 3].map((id) => (
-                <Image
-                  width={50}
-                  height={50}
-                  key={id}
-                  src={`/box/box-${id}.webp`}
-                  alt="box"
-                  className="w-10 h-10 rounded-full border-2 border-dark-700"
-                />
-              ))}
-            </div>
-            <div>
-              <div className="flex items-center">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={16}
-                    className="text-primary-500 fill-primary-500"
-                  />
-                ))}
+      <div className="container-custom relative z-10 py-24 lg:py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            className="max-w-xl"
+          >
+            <motion.h1
+              variants={fadeUp}
+              custom={1}
+              className="mt-6 mb-6 text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+            >
+              Lâchez les tableurs.{" "}
+              <span className="bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
+                Scorez en direct.
+              </span>
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              custom={2}
+              className="text-lg text-gray-300 leading-relaxed max-w-lg"
+            >
+              Inscriptions, heats, scores et classement dans un seul outil.
+              Plus de copier-coller entre Google Sheets le jour J.
+            </motion.p>
+
+            <motion.div
+              variants={fadeUp}
+              custom={3}
+              className="flex flex-col sm:flex-row gap-3 mt-8"
+            >
+              <Link href="https://app.comprank.fr" className="group btn-primary">
+                Démarrer gratuitement{" "}
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link href="#features" className="btn-secondary">
+                En savoir plus
+              </Link>
+            </motion.div>
+
+            <motion.div
+              variants={fadeUp}
+              custom={4}
+              className="mt-10 flex items-center gap-6"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map((id) => (
+                    <Image
+                      width={36}
+                      height={36}
+                      key={id}
+                      src={`/box/box-${id}.webp`}
+                      alt="box"
+                      className="size-9 rounded-full border-2 border-dark-600"
+                    />
+                  ))}
+                </div>
+                <div>
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        className="size-3.5 text-primary-500 fill-primary-500"
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-400">
+                    50+ boxs en France
+                  </span>
+                </div>
               </div>
-              <p className="text-sm text-gray-400">
-                Approuvé par des boxs CrossFit
-              </p>
+
+              {/* <div className="h-8 w-px bg-dark-400" />
+
+              <div className="flex gap-6">
+                <StatCounter value={60} suffix="+" label="Compétitions" />
+                <StatCounter value={8500} suffix="+" label="Athlètes" />
+              </div> */}
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            variants={fadeInRight}
+            initial="hidden"
+            animate="visible"
+            className="relative"
+          >
+            <div className="absolute -inset-6 bg-gradient-to-br from-primary-500/10 via-accent-500/5 to-transparent rounded-3xl blur-2xl" />
+
+            <div className="relative bg-dark-700/60 backdrop-blur-xl border border-dark-400/60 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-dark-400/40 bg-dark-800/40">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex items-center justify-center size-7 rounded-lg bg-primary-500/10">
+                    <Trophy className="size-4 text-primary-500" />
+                  </div>
+                  <span className="text-sm font-semibold text-white">
+                    Classement général
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/10 border border-green-500/20">
+                  <div className="size-1.5 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-xs font-medium text-green-400">
+                    Live
+                  </span>
+                </div>
+              </div>
+
+              <LayoutGroup>
+                <div className="divide-y divide-dark-500/30">
+                  {athletes.map((a) => (
+                    <LeaderboardRow key={a.name} athlete={a} />
+                  ))}
+                </div>
+              </LayoutGroup>
+
+              <div className="px-5 py-2.5 border-t border-dark-400/40 bg-dark-800/30">
+                <p className="text-xs text-gray-500 text-center">
+                  Actualisation automatique &middot; 5 épreuves
+                </p>
+              </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
   );
-};
+}

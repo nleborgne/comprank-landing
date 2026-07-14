@@ -4,6 +4,7 @@ import "./globals.css";
 import ObserverProvider from "@/components/observer-provider";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { MetaPixel } from "@/components/meta-pixel";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
           {children}
         </ObserverProvider>
         <Footer />
+        <MetaPixel />
       </body>
     </html>
   );

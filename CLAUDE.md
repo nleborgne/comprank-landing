@@ -73,6 +73,13 @@ The homepage has been fully redesigned with:
 - Responsive design with mobile-first approach
 - Custom animations and transitions throughout
 
+### Analytics
+
+- **Meta Pixel** (`components/meta-pixel.tsx`), rendered from the root layout. Loads via `next/script` with `afterInteractive`.
+- Only fires when `NODE_ENV === "production"`, so local dev traffic never reaches Meta.
+- Tracks `PageView` on hard page loads only — client-side route changes are not tracked (only `/` and `/terms` exist, and `/terms` has no campaign value).
+- **No consent gate yet.** The pixel drops cookies unconditionally, which is not GDPR/CNIL-compliant. A cookie banner is planned as separate work; the pixel is isolated in its own component so the gate can wrap it without touching the layout.
+
 ### Content and Localization
 
 - All content is in French, targeting French-speaking competition organizers

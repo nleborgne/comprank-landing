@@ -1,4 +1,5 @@
 import "./globals.css";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Medal,
@@ -28,32 +29,137 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Hero } from "@/components/hero";
 import { SmartPlannerDemo } from "@/components/smart-planner-demo";
 import { JudgeScoringMockup } from "@/components/judge-scoring-mockup";
+import { JsonLd } from "@/components/json-ld";
+import {
+  APP_URL,
+  createPageMetadata,
+  SITE_URL,
+} from "@/lib/site";
 
-const anim = "opacity-0 translate-y-8 intersect:opacity-100 intersect:translate-y-0 intersect-once transition-all duration-700";
+export const metadata: Metadata = createPageMetadata({
+  title: "Logiciel de compétition CrossFit & HYROX",
+  description:
+    "Gérez inscriptions, planning, scoring mobile et classements en direct avec CompRank, le logiciel conçu pour les compétitions CrossFit et HYROX en France.",
+  path: "/",
+});
+
+const anim = "opacity-100 translate-y-0";
+
+const homepageFaqs = [
+  {
+    question: "Le classement s’actualise-t-il automatiquement ?",
+    answer:
+      "Oui. Dès qu’un score est validé par un juge, le leaderboard est mis à jour en temps réel.",
+  },
+  {
+    question: "Puis-je rendre un leaderboard public ou privé ?",
+    answer:
+      "Vous pouvez partager un lien public, intégrer l’affichage sur écran géant ou restreindre l’accès aux officiels.",
+  },
+  {
+    question: "Comment fonctionnent les listes d’attente ?",
+    answer:
+      "Activez-les par division. En cas de désistement, le premier de la liste reçoit une invitation et peut confirmer sa place.",
+  },
+  {
+    question: "Puis-je importer des athlètes existants ?",
+    answer:
+      "Oui, via import CSV ou envoi d’invitations avec des codes dédiés.",
+  },
+  {
+    question: "Proposez-vous une assistance le jour J ?",
+    answer:
+      "Nous proposons une assistance prioritaire par chat et email, ainsi que des guides de bonnes pratiques.",
+  },
+];
 
 function TrustBar() {
   return (
     <section className="py-12 bg-dark-800/50 border-y border-dark-600">
       <div className="container-custom">
         <div className="text-center">
-          <p className="mb-6 text-sm uppercase tracking-wider text-gray-500 font-medium">
-            Adopté par des organisateurs partout en France
+          <p className="mb-6 font-mono text-base uppercase tracking-wide text-gray-500 sm:text-sm">
+            Également adapté à d’autres formats de compétition
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            {["CrossFit", "Functional Fitness", "Haltérophilie", "Hyrox", "Powerlifting"].map((sport) => (
+            {["Fitness fonctionnel", "Haltérophilie", "Powerlifting"].map((sport) => (
               <Badge
                 key={sport}
                 variant="outline"
-                className="py-2 px-4 bg-dark-700/50 border-dark-500 text-gray-300 hover:border-primary-500/50 hover:bg-primary-500/5 transition-all"
+                className="px-4 py-2"
               >
                 {sport}
               </Badge>
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PrimaryCategories() {
+  const categories = [
+    {
+      href: "/competition-crossfit",
+      label: "CrossFit",
+      title: "Workouts, divisions, heats et scoring mobile",
+      description:
+        "Préparez le déroulé, équipez vos juges et publiez un leaderboard actualisé à chaque score.",
+    },
+    {
+      href: "/competition-hyrox",
+      label: "HYROX",
+      title: "Catégories, vagues, stations et temps intermédiaires",
+      description:
+        "Suivez les départs et les splits station par station jusqu’au classement final.",
+    },
+  ];
+
+  return (
+    <section id="formats" className="section bg-dark-800">
+      <div className="container-custom">
+        <div className="flex flex-col items-start gap-4">
+          <p className="font-mono text-base uppercase tracking-wide text-primary-400 sm:text-sm">
+            Deux formats, un même outil
+          </p>
+          <h2 className="max-w-[35ch] text-3xl font-semibold tracking-tight text-balance text-white md:text-4xl">
+            Une organisation pensée pour CrossFit et HYROX
+          </h2>
+          <p className="max-w-[48ch] text-lg text-pretty text-gray-400">
+            Chaque discipline dispose de son propre déroulé, tout en gardant
+            inscriptions, terrain et résultats dans la même plateforme.
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+          {categories.map((category) => (
+            <Link
+              key={category.href}
+              href={category.href}
+              className="group flex flex-col items-start gap-5 rounded-xl bg-dark-700/60 p-6 ring-1 ring-white/10 hover:ring-primary-500/50 sm:p-8"
+            >
+              <Badge variant="outline">{category.label}</Badge>
+              <h3 className="max-w-[40ch] text-2xl font-medium tracking-tight text-balance text-white">
+                {category.title}
+              </h3>
+              <p className="max-w-[56ch] text-base text-pretty text-gray-400 sm:text-sm">
+                {category.description}
+              </p>
+              <p className="flex items-center gap-2 text-base font-medium text-primary-400 sm:text-sm">
+                Découvrir la solution
+                <ArrowRight
+                  className="size-4 shrink-0 stroke-primary-400 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </p>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
@@ -310,7 +416,7 @@ function HowItWorksSection() {
                 <div className="relative z-10 w-10 h-10 rounded-full bg-dark-700 border-2 border-dark-500 group-hover:border-primary-500/50 flex items-center justify-center mx-auto mb-3 transition-colors">
                   <span className="text-sm font-bold text-primary-400">{step.n}</span>
                 </div>
-                <h4 className="text-sm font-semibold text-white mb-1">{step.title}</h4>
+                <h3 className="text-sm font-semibold text-white mb-1">{step.title}</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">{step.desc}</p>
               </div>
             ))}
@@ -330,26 +436,12 @@ function FAQSection() {
         </div>
         <div className={`mx-auto max-w-3xl ${anim}`}>
           <Accordion type="single" collapsible>
-            <AccordionItem value="q1">
-              <AccordionTrigger>Le classement s&apos;actualise-t-il automatiquement ?</AccordionTrigger>
-              <AccordionContent>Oui. Dès qu&apos;un score est validé par un juge, le leaderboard est mis à jour en temps réel.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="q2">
-              <AccordionTrigger>Puis-je rendre un leaderboard public ou privé ?</AccordionTrigger>
-              <AccordionContent>Vous pouvez partager un lien public, intégrer l&apos;affichage sur écran géant, ou restreindre l&apos;accès aux officiels.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="q3">
-              <AccordionTrigger>Comment fonctionnent les listes d&apos;attente ?</AccordionTrigger>
-              <AccordionContent>Activez-les par division. En cas de désistement, le premier de la liste reçoit une invitation et peut confirmer sa place.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="q4">
-              <AccordionTrigger>Puis-je importer des athlètes existants ?</AccordionTrigger>
-              <AccordionContent>Oui, via import CSV ou envoi d&apos;invitations avec codes dédiés.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="q5">
-              <AccordionTrigger>Proposez-vous une assistance le jour J ?</AccordionTrigger>
-              <AccordionContent>Nous proposons une assistance prioritaire par chat et email, ainsi que des guides de bonnes pratiques.</AccordionContent>
-            </AccordionItem>
+            {homepageFaqs.map((faq, index) => (
+              <AccordionItem key={faq.question} value={`q${index + 1}`}>
+                <AccordionTrigger>{faq.question}</AccordionTrigger>
+                <AccordionContent>{faq.answer}</AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
         </div>
       </div>
@@ -369,21 +461,23 @@ function BottomCTA() {
               <Sparkles className="w-4 h-4 mr-2" />
               Lancez-vous maintenant
             </Badge>
-            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
               Prêt à organiser votre{" "}
               <span className="bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
                 prochaine compétition ?
               </span>
-            </h3>
+            </h2>
             <p className="mx-auto max-w-2xl text-xl text-gray-300 mb-8">
               Lancez votre événement en quelques minutes et offrez une expérience premium
               à vos athlètes et spectateurs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="https://app.comprank.fr" className="group btn-primary text-lg px-8 py-4">
-                Démarrer gratuitement
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <Button asChild size="lg" variant="outline">
+                <Link href={APP_URL}>
+                  Démarrer gratuitement
+                  <ArrowRight data-icon="inline-end" aria-hidden="true" />
+                </Link>
+              </Button>
             </div>
           </div>
         </Card>
@@ -393,9 +487,60 @@ function BottomCTA() {
 }
 
 export default function Page() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": `${SITE_URL}/#software`,
+        name: "CompRank",
+        url: SITE_URL,
+        applicationCategory: "BusinessApplication",
+        applicationSubCategory: "Competition management software",
+        operatingSystem: "Web",
+        browserRequirements: "Requires a modern web browser",
+        inLanguage: "fr-FR",
+        description:
+          "Logiciel de gestion de compétitions CrossFit et HYROX pour les organisateurs en France.",
+        featureList: [
+          "Gestion des inscriptions",
+          "Planification des vagues et des heats",
+          "Scoring mobile pour les juges",
+          "Classements en direct",
+          "Gestion des catégories et divisions",
+        ],
+        audience: {
+          "@type": "Audience",
+          audienceType: "Organisateurs de compétitions sportives",
+          geographicArea: {
+            "@type": "Country",
+            name: "France",
+          },
+        },
+        provider: {
+          "@id": `${SITE_URL}/#organization`,
+        },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${SITE_URL}/#faq`,
+        mainEntity: homepageFaqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      },
+    ],
+  };
+
   return (
-    <>
+    <main className="isolate">
+      <JsonLd data={structuredData} />
       <Hero />
+      <PrimaryCategories />
       <TrustBar />
       <LeaderboardSection />
       <SmartPlannerSection />
@@ -404,6 +549,6 @@ export default function Page() {
       <HowItWorksSection />
       <FAQSection />
       <BottomCTA />
-    </>
+    </main>
   );
 }

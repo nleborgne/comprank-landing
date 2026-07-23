@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/site";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Conditions générales",
+  description:
+    "Consultez les conditions générales de vente et d’utilisation de la plateforme CompRank.",
+  path: "/terms",
+});
+
 export default function Page() {
   return (
-    <div className="max-w-3xl mx-auto p-6 rounded-lg shadow-md text-white mt-16">
+    <main className="mx-auto mt-16 max-w-3xl rounded-lg p-6 text-white">
       <h1 className="text-3xl font-bold mb-6 text-primary-500">
         CONDITIONS GÉNÉRALES DE VENTE ET D&apos;UTILISATION
       </h1>
@@ -832,6 +842,6 @@ export default function Page() {
           de spectacle cinématographique.
         </p>
       </section>
-    </div>
+    </main>
   );
 }

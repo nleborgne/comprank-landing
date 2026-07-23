@@ -3,8 +3,35 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 0 0% 7%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 32 100% 65%;
+    --primary-foreground: 0 0% 7%;
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 214 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 24%;
+    --input: 0 0% 24%;
+    --ring: 32 100% 65%;
+    --radius: 0.75rem;
+  }
+
   html {
     @apply scroll-smooth;
+  }
+
+  .scheme-only-dark {
+    color-scheme: dark;
   }
 
   body {
@@ -17,7 +44,7 @@
   h4,
   h5,
   h6 {
-    @apply font-bold tracking-tight;
+    @apply font-semibold tracking-tight;
   }
 
   h1 {
@@ -39,15 +66,15 @@
   }
 
   .btn {
-    @apply px-6 py-3 rounded-md font-semibold transition-all duration-300 shadow-md inline-flex items-center justify-center;
+    @apply inline-flex items-center justify-center rounded-md px-4 py-3 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500;
   }
 
   .btn-primary {
-    @apply btn bg-primary-500 hover:bg-primary-600 text-dark-700 hover:shadow-glow;
+    @apply btn bg-primary-500 text-dark-700 hover:bg-primary-600;
   }
 
   .btn-secondary {
-    @apply btn bg-dark-500 hover:bg-dark-400 border border-primary-500 text-primary-500;
+    @apply btn border border-primary-500 bg-dark-500 text-primary-500 hover:bg-dark-400;
   }
 
   .section {

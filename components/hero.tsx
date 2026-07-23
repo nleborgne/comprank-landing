@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowRight,
   Star,
@@ -9,12 +9,12 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
-  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { APP_URL } from "@/lib/site";
 
 interface Athlete {
   name: string;
@@ -61,18 +61,21 @@ function useAnimatedScores() {
   return athletes;
 }
 
-function AnimatedPoints({ value, highlight }: { value: number; highlight: boolean }) {
-  const prevValue = useRef(value);
-  const changed = prevValue.current !== value;
-  const increased = value > prevValue.current;
-  prevValue.current = value;
-
+function AnimatedPoints({
+  value,
+  delta,
+  highlight,
+}: {
+  value: number;
+  delta: number;
+  highlight: boolean;
+}) {
   return (
     <motion.span
       key={value}
       initial={
-        changed
-          ? { scale: 1.25, color: increased ? "#4ade80" : "#f87171" }
+        highlight && delta !== 0
+          ? { scale: 1.25, color: delta > 0 ? "#4ade80" : "#f87171" }
           : false
       }
       animate={{ scale: 1, color: "#ffad4a" }}
@@ -102,27 +105,6 @@ function PointsDelta({ delta }: { delta: number }) {
   );
 }
 
-function useCountUp(target: number, duration = 2000) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let start = 0;
-    const increment = target / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [target, duration]);
-
-  return count;
-}
-
 const ease = [0.25, 0.46, 0.45, 0.94] as const;
 
 const fadeUp = {
@@ -142,27 +124,6 @@ const fadeInRight = {
     transition: { delay: 0.4, duration: 0.6, ease },
   },
 };
-
-function StatCounter({
-  value,
-  suffix,
-  label,
-}: {
-  value: number;
-  suffix: string;
-  label: string;
-}) {
-  const count = useCountUp(value);
-  return (
-    <div className="text-center">
-      <div className="text-2xl font-bold text-white tabular-nums">
-        {count}
-        {suffix}
-      </div>
-      <div className="text-xs text-gray-400">{label}</div>
-    </div>
-  );
-}
 
 function RankChangeIndicator({ rankChange }: { rankChange: number }) {
   if (rankChange > 0) {
@@ -237,6 +198,7 @@ function LeaderboardRow({ athlete }: { athlete: Athlete }) {
         <div className="flex items-center gap-1.5">
           <AnimatedPoints
             value={athlete.points}
+            delta={athlete.delta}
             highlight={athlete.highlight}
           />
           <AnimatePresence mode="popLayout">
@@ -274,28 +236,33 @@ export function Hero() {
       <div className="container-custom relative z-10 py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <motion.div
-            initial="hidden"
+            initial={false}
             animate="visible"
             className="max-w-xl"
           >
+            <motion.p
+              variants={fadeUp}
+              custom={0}
+              className="font-mono text-base uppercase tracking-wide text-primary-400 sm:text-sm"
+            >
+              Lâchez les tableurs. Scorez en direct.
+            </motion.p>
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="mt-6 mb-6 text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+              className="mt-6 max-w-[24ch] text-4xl font-semibold tracking-tight text-balance text-white md:text-5xl lg:text-6xl"
             >
-              Lâchez les tableurs.{" "}
-              <span className="bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
-                Scorez en direct.
-              </span>
+              Le logiciel pour organiser vos compétitions CrossFit et HYROX
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="text-lg text-gray-300 leading-relaxed max-w-lg"
+              className="mt-6 max-w-[48ch] text-lg text-pretty text-gray-300"
             >
-              Inscriptions, heats, scores et classement dans un seul outil.
-              Plus de copier-coller entre Google Sheets le jour J.
+              Gérez inscriptions, planning, scoring mobile et classements en
+              direct depuis un seul outil, conçu pour les organisateurs en
+              France.
             </motion.p>
 
             <motion.div
@@ -303,13 +270,15 @@ export function Hero() {
               custom={3}
               className="flex flex-col sm:flex-row gap-3 mt-8"
             >
-              <Link href="https://app.comprank.fr" className="group btn-primary">
-                Démarrer gratuitement{" "}
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link href="#features" className="btn-secondary">
-                En savoir plus
-              </Link>
+              <Button asChild size="lg">
+                <Link href={APP_URL}>
+                  Démarrer gratuitement
+                  <ArrowRight data-icon="inline-end" aria-hidden="true" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="#formats">Explorer les formats</Link>
+              </Button>
             </motion.div>
 
             <motion.div
@@ -325,8 +294,8 @@ export function Hero() {
                       height={36}
                       key={id}
                       src={`/box/box-${id}.webp`}
-                      alt="box"
-                      className="size-9 rounded-full border-2 border-dark-600"
+                      alt=""
+                      className="size-9 rounded-full object-cover outline outline-2 outline-dark-600"
                     />
                   ))}
                 </div>
@@ -339,24 +308,17 @@ export function Hero() {
                       />
                     ))}
                   </div>
-                  <span className="text-xs text-gray-400">
-                    50+ boxs en France
-                  </span>
+                  <p className="text-base text-gray-400 sm:text-sm">
+                    50+ salles en France
+                  </p>
                 </div>
               </div>
-
-              {/* <div className="h-8 w-px bg-dark-400" />
-
-              <div className="flex gap-6">
-                <StatCounter value={60} suffix="+" label="Compétitions" />
-                <StatCounter value={8500} suffix="+" label="Athlètes" />
-              </div> */}
             </motion.div>
           </motion.div>
 
           <motion.div
             variants={fadeInRight}
-            initial="hidden"
+            initial={false}
             animate="visible"
             className="relative"
           >

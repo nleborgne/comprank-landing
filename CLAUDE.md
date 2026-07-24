@@ -78,13 +78,22 @@ The homepage has been fully redesigned with:
 - **Meta Pixel** (`components/meta-pixel.tsx`), rendered from the root layout. Loads via `next/script` with `afterInteractive`.
 - Only fires when `NODE_ENV === "production"`, so local dev traffic never reaches Meta.
 - Tracks `PageView` on hard page loads only — client-side route changes are not tracked (only `/` and `/terms` exist, and `/terms` has no campaign value).
+- Tracks `Lead` (defensive `window.fbq` call, production only) when the lead dialog form is submitted successfully.
 - **No consent gate yet.** The pixel drops cookies unconditionally, which is not GDPR/CNIL-compliant. A cookie banner is planned as separate work; the pixel is isolated in its own component so the gate can wrap it without touching the layout.
+
+### Lead Capture (CTA form)
+
+- All 6 "Démarrer / Démarrer gratuitement" CTAs (header desktop + mobile menu, hero, homepage bottom CTA, both competition landings) open a lead-capture modal instead of linking to `app.comprank.fr`. The only remaining outbound link to the app is a discreet one on the modal's success screen.
+- **`components/lead-dialog.tsx`** — client component. Two usage modes: wrap the trigger as children (`DialogTrigger asChild`), or controlled via `open`/`onOpenChange` (used by the header so the dialog survives the mobile menu unmounting). Fields: first/last name, email, optional phone, two required segmented-pill radio groups (profile: coach/box-owner/other; timeline: 3-months/6-12-months/considering/no) with no default selection, plus an off-screen honeypot (`website`). Form state resets on reopen.
+- **`lib/lead-schema.ts`** — shared zod schema (client + server), French error messages, pill option lists, and label helpers for the email body.
+- **`app/actions/lead.ts`** — `next-safe-action` server action (client in `lib/safe-action.ts`). Honeypot filled → fake success, no email. Otherwise sends a plain-text email via the Resend SDK: from `CompRank <contact@transactional.comprank.fr>`, to `contact@comprank.fr`, `replyTo` = lead's email, subject `Nouveau lead : {First} {Last} ({Profile})`. Missing `RESEND_API_KEY` or send failure → throws; the client shows a generic French error with a mailto fallback (never fakes success).
+- **`RESEND_API_KEY`** is required in production (Vercel env) — see `.env.example`. No rate limiting yet; the honeypot is the only spam protection (known limitation, acceptable for current traffic).
 
 ### Content and Localization
 
 - All content is in French, targeting French-speaking competition organizers
 - Focuses on CrossFit, functional fitness, weightlifting, and similar sports
-- Links to external application at `https://app.comprank.fr`
+- The external application lives at `https://app.comprank.fr` (`APP_URL` in `lib/site.ts`); CTAs no longer link to it directly (see Lead Capture)
 
 ## File Organization
 

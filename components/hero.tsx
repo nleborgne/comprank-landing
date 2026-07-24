@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { APP_URL } from "@/lib/site";
+import { LeadDialog } from "@/components/lead-dialog";
 
 interface Athlete {
   name: string;
@@ -270,12 +270,12 @@ export function Hero() {
               custom={3}
               className="flex flex-col sm:flex-row gap-3 mt-8"
             >
-              <Button asChild size="lg">
-                <Link href={APP_URL}>
+              <LeadDialog>
+                <Button size="lg">
                   Démarrer gratuitement
                   <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                </Link>
-              </Button>
+                </Button>
+              </LeadDialog>
               <Button asChild size="lg" variant="outline">
                 <Link href="#formats">Explorer les formats</Link>
               </Button>

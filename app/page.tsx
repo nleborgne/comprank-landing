@@ -32,14 +32,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Hero } from "@/components/hero";
+import { LeadDialog } from "@/components/lead-dialog";
 import { SmartPlannerDemo } from "@/components/smart-planner-demo";
 import { JudgeScoringMockup } from "@/components/judge-scoring-mockup";
 import { JsonLd } from "@/components/json-ld";
-import {
-  APP_URL,
-  createPageMetadata,
-  SITE_URL,
-} from "@/lib/site";
+import { createPageMetadata, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Logiciel de compétition CrossFit & HYROX",
@@ -472,12 +469,12 @@ function BottomCTA() {
               à vos athlètes et spectateurs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button asChild size="lg" variant="outline">
-                <Link href={APP_URL}>
+              <LeadDialog>
+                <Button size="lg" variant="outline">
                   Démarrer gratuitement
                   <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                </Link>
-              </Button>
+                </Button>
+              </LeadDialog>
             </div>
           </div>
         </Card>

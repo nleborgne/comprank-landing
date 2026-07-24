@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { CTA } from "./CTA";
+import { LeadDialog } from "./lead-dialog";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
@@ -16,7 +17,9 @@ const navigation = [
 
 export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLeadOpen, setIsLeadOpen] = useState(false);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
+  const openLead = () => setIsLeadOpen(true);
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-dark-900/90 backdrop-blur-xl">
@@ -52,7 +55,7 @@ export const Header = () => {
 
         <div className="flex flex-1 items-center justify-end gap-2">
           <div className="hidden sm:block">
-            <CTA label="Démarrer" onClick={closeMobileMenu} />
+            <CTA label="Démarrer" onClick={openLead} />
           </div>
 
           <div className="relative lg:hidden">
@@ -97,7 +100,10 @@ export const Header = () => {
                   <div className="mt-2 border-t border-white/10 pt-3 sm:hidden">
                     <CTA
                       label="Démarrer gratuitement"
-                      onClick={closeMobileMenu}
+                      onClick={() => {
+                        closeMobileMenu();
+                        openLead();
+                      }}
                     />
                   </div>
                 </nav>
@@ -106,6 +112,8 @@ export const Header = () => {
           </div>
         </div>
       </div>
+
+      <LeadDialog open={isLeadOpen} onOpenChange={setIsLeadOpen} />
     </header>
   );
 };

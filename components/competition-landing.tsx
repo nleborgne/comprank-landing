@@ -10,7 +10,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/json-ld";
-import { APP_URL, SITE_NAME, SITE_URL } from "@/lib/site";
+import { LeadDialog } from "@/components/lead-dialog";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export type LandingFeature = {
   icon: LucideIcon;
@@ -154,12 +155,12 @@ export function CompetitionLanding({
               ))}
             </ul>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href={APP_URL}>
+              <LeadDialog>
+                <Button size="lg">
                   {primaryCta}
                   <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                </Link>
-              </Button>
+                </Button>
+              </LeadDialog>
               <Button asChild size="lg" variant="outline">
                 <Link href="#fonctionnalites">Voir les fonctionnalités</Link>
               </Button>
@@ -318,9 +319,11 @@ export function CompetitionLanding({
               Créez votre événement et centralisez toute l’organisation dans
               CompRank.
             </p>
-            <Button asChild size="lg" variant="outline">
-              <Link href={APP_URL}>Démarrer gratuitement</Link>
-            </Button>
+            <LeadDialog>
+              <Button size="lg" variant="outline">
+                Démarrer gratuitement
+              </Button>
+            </LeadDialog>
           </div>
         </div>
       </section>

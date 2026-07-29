@@ -5,6 +5,7 @@ import { actionClient } from "@/lib/safe-action";
 import {
   getProfileLabel,
   getTimelineLabel,
+  isHoneypotFilled,
   leadSchema,
 } from "@/lib/lead-schema";
 
@@ -17,7 +18,10 @@ export const sendLead = actionClient
     const { firstName, lastName, email, phone, profile, timeline, website } =
       parsedInput;
 
-    if (website) {
+    // Fake success, intentionally indistinguishable from a real one so bots
+    // can't detect the honeypot. The client filters the Lead pixel event on
+    // its own copy of the honeypot value.
+    if (isHoneypotFilled(website)) {
       return { success: true };
     }
 

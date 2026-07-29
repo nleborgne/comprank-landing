@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { sendLead } from "@/app/actions/lead";
 import {
+  isHoneypotFilled,
+  LEAD_MAX_LENGTHS,
   leadSchema,
   PROFILE_OPTIONS,
   TIMELINE_OPTIONS,
@@ -63,10 +65,22 @@ export function LeadDialog({ children, open, onOpenChange }: LeadDialogProps) {
   const [values, setValues] = React.useState<FormValues>(EMPTY_VALUES);
   const [errors, setErrors] = React.useState<Partial<Record<keyof FormValues, string>>>({});
   const [submitted, setSubmitted] = React.useState(false);
+  const [failed, setFailed] = React.useState(false);
 
   const { execute, result, reset, isExecuting } = useAction(sendLead, {
-    onSuccess: () => {
+    onSuccess: ({ data, input }) => {
+      // A network/execution failure leaves the hook result empty, which it
+      // still reports as a success. Only trust an explicit action payload.
+      if (!data?.success) {
+        setFailed(true);
+        return;
+      }
       setSubmitted(true);
+      // The server returns a fake success for honeypot submissions: keep them
+      // out of the Lead pixel data.
+      if (isHoneypotFilled(input.website)) {
+        return;
+      }
       if (
         process.env.NODE_ENV === "production" &&
         typeof window !== "undefined" &&
@@ -82,6 +96,7 @@ export function LeadDialog({ children, open, onOpenChange }: LeadDialogProps) {
       setValues(EMPTY_VALUES);
       setErrors({});
       setSubmitted(false);
+      setFailed(false);
       reset();
     }
   }, [isOpen, reset]);
@@ -111,6 +126,7 @@ export function LeadDialog({ children, open, onOpenChange }: LeadDialogProps) {
       return;
     }
     setErrors({});
+    setFailed(false);
     execute(parsed.data);
   };
 
@@ -157,6 +173,7 @@ export function LeadDialog({ children, open, onOpenChange }: LeadDialogProps) {
                   id="lead-firstName"
                   name="firstName"
                   autoComplete="given-name"
+                  maxLength={LEAD_MAX_LENGTHS.firstName}
                   value={values.firstName}
                   onChange={(event) => setField("firstName", event.target.value)}
                   aria-invalid={!!errors.firstName}
@@ -186,6 +203,7 @@ export function LeadDialog({ children, open, onOpenChange }: LeadDialogProps) {
                   id="lead-lastName"
                   name="lastName"
                   autoComplete="family-name"
+                  maxLength={LEAD_MAX_LENGTHS.lastName}
                   value={values.lastName}
                   onChange={(event) => setField("lastName", event.target.value)}
                   aria-invalid={!!errors.lastName}
@@ -217,6 +235,7 @@ export function LeadDialog({ children, open, onOpenChange }: LeadDialogProps) {
                 name="email"
                 type="email"
                 autoComplete="email"
+                maxLength={LEAD_MAX_LENGTHS.email}
                 value={values.email}
                 onChange={(event) => setField("email", event.target.value)}
                 aria-invalid={!!errors.email}
@@ -246,6 +265,7 @@ export function LeadDialog({ children, open, onOpenChange }: LeadDialogProps) {
                 name="phone"
                 type="tel"
                 autoComplete="tel"
+                maxLength={LEAD_MAX_LENGTHS.phone}
                 value={values.phone}
                 onChange={(event) => setField("phone", event.target.value)}
               />
@@ -322,7 +342,7 @@ export function LeadDialog({ children, open, onOpenChange }: LeadDialogProps) {
               />
             </div>
 
-            {result.serverError || result.validationErrors ? (
+            {result.serverError || result.validationErrors || failed ? (
               <p className="text-sm text-red-400" role="alert">
                 Une erreur est survenue. Réessayez ou écrivez-nous à{" "}
                 <a

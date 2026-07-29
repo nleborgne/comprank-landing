@@ -60,7 +60,13 @@ export const leadSchema = z.object({
   timeline: z.enum(["3-months", "6-12-months", "considering", "no"], {
     errorMap: () => ({ message: "Indiquez où vous en êtes." }),
   }),
-  website: z.string().max(LEAD_MAX_LENGTHS.website).optional(),
+  website: z
+    .string()
+    .max(
+      LEAD_MAX_LENGTHS.website,
+      `Ce champ ne doit pas dépasser ${LEAD_MAX_LENGTHS.website} caractères.`,
+    )
+    .optional(),
 });
 
 export type LeadInput = z.infer<typeof leadSchema>;

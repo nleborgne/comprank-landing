@@ -13,6 +13,20 @@ export const TIMELINE_OPTIONS = [
   { value: "no", label: "Non" },
 ] as const;
 
+type Option = { readonly value: string; readonly label: string };
+
+// Keeps the radio pills rendered by the form and the values accepted by the
+// schema from drifting apart: z.enum needs a non-empty tuple, which we build
+// from the option list itself.
+function optionValues<const T extends readonly Option[]>(
+  options: T,
+): [T[number]["value"], ...T[number]["value"][]] {
+  return options.map((option) => option.value) as [
+    T[number]["value"],
+    ...T[number]["value"][],
+  ];
+}
+
 export const LEAD_MAX_LENGTHS = {
   firstName: 80,
   lastName: 80,
@@ -54,10 +68,10 @@ export const leadSchema = z.object({
       `Le numéro de téléphone ne doit pas dépasser ${LEAD_MAX_LENGTHS.phone} caractères.`,
     )
     .optional(),
-  profile: z.enum(["coach", "box-owner", "other"], {
+  profile: z.enum(optionValues(PROFILE_OPTIONS), {
     errorMap: () => ({ message: "Sélectionnez votre profil." }),
   }),
-  timeline: z.enum(["3-months", "6-12-months", "considering", "no"], {
+  timeline: z.enum(optionValues(TIMELINE_OPTIONS), {
     errorMap: () => ({ message: "Indiquez où vous en êtes." }),
   }),
   website: z

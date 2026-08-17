@@ -81,6 +81,14 @@ The homepage has been fully redesigned with:
 - Tracks `Lead` (defensive `window.fbq` call, production only) when the lead dialog form is submitted successfully. Honeypot submissions are excluded client-side (`isHoneypotFilled` on the submitted input), and the event only fires on an explicit `{ success: true }` payload — a network failure leaves the next-safe-action hook result empty, which it otherwise reports as success.
 - **No consent gate yet.** The pixel drops cookies unconditionally, which is not GDPR/CNIL-compliant. A cookie banner is planned as separate work; the pixel is isolated in its own component so the gate can wrap it without touching the layout.
 
+### Crawler and AI Agent Discovery
+
+- **`app/robots.txt/route.ts`** — plain route handler, not Next's `MetadataRoute.Robots` metadata file (which has no escape hatch for custom directives). Serves the standard `Allow` / `Sitemap` / `Host` lines plus a `Content-Signal` directive (https://contentsignals.org/).
+- Declared stance is `search=yes, ai-input=yes, ai-train=no`: assistants may index the site and cite it when answering, but the content is reserved for model training. Indexing and RAG are how organizers find us, so blocking them would be self-defeating. Content Signals are declaratory — no enforcement mechanism, untested legal weight.
+- **`app/llms.txt/route.ts`** — `/llms.txt` summary per https://llmstxt.org/, in French, for assistants that recommend tools. Deliberately duplicates page copy: **update it when the feature list or pages change**, it will not drift on its own.
+- Both are `export const dynamic = "force-static"` (route handlers are dynamic by default in Next 15+) and interpolate `SITE_URL` / `APP_URL` from `lib/site.ts`.
+- Deliberately **not** implemented, despite agent-readiness checklists asking for them: API catalog (RFC 9727), OAuth/OIDC discovery, OAuth Protected Resource metadata, auth.md, MCP Server Card, agent-skills index, DNS-AID records, WebMCP. This repo is a 4-page marketing site with no public API, no auth server, and no agent-facing surface — all of those would advertise endpoints that do not exist. WebMCP in particular would expose the lead form to automated submissions.
+
 ### Lead Capture (CTA form)
 
 - All 6 "Démarrer / Démarrer gratuitement" CTAs (header desktop + mobile menu, hero, homepage bottom CTA, both competition landings) open a lead-capture modal instead of linking to `app.comprank.fr`. The only remaining outbound link to the app is a discreet one on the modal's success screen.
@@ -101,6 +109,9 @@ The homepage has been fully redesigned with:
 app/                 # Next.js App Router pages
 ├── layout.tsx       # Root layout with fonts and providers
 ├── page.tsx         # Main landing page with all sections
+├── sitemap.ts       # Generated sitemap.xml
+├── robots.txt/      # Route handler: robots.txt + Content-Signal
+├── llms.txt/        # Route handler: /llms.txt site summary for AI agents
 └── terms/page.tsx   # Terms of service page
 
 components/          # React components

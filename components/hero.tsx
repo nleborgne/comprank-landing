@@ -15,6 +15,13 @@ import Link from "next/link";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { LeadDialog } from "@/components/lead-dialog";
+import {
+  HERO_SUBTITLES,
+  HeroNewsChips,
+  HeroProofDuo,
+  HeroProofTv,
+  HeroProofTvPhone,
+} from "@/components/proto-hero";
 
 export interface Athlete {
   name: string;
@@ -291,15 +298,42 @@ export function Hero() {
               Le logiciel pour organiser vos compétitions CrossFit et HYROX
             </motion.h1>
 
-            <motion.p
-              variants={fadeUp}
-              custom={2}
-              className="mt-6 max-w-[48ch] text-lg text-pretty text-gray-300"
-            >
-              Gérez inscriptions, planning, scoring mobile et classements en
-              direct depuis un seul outil, conçu pour les organisateurs en
-              France.
-            </motion.p>
+            <div data-uidotsh-pick="Hero · récit du sous-titre" className="contents">
+              <div data-uidotsh-option="Outil unique (current)" className="contents">
+                <motion.p
+                  variants={fadeUp}
+                  custom={2}
+                  className="mt-6 max-w-[48ch] text-lg text-pretty text-gray-300"
+                >
+                  {HERO_SUBTITLES.current}
+                </motion.p>
+              </div>
+              <div data-uidotsh-option="Le juge, même sans réseau" className="contents" hidden>
+                <motion.p
+                  variants={fadeUp}
+                  custom={2}
+                  className="mt-6 max-w-[48ch] text-lg text-pretty text-gray-300"
+                >
+                  {HERO_SUBTITLES.judge}
+                </motion.p>
+              </div>
+              <div data-uidotsh-option="Le jour J tient" className="contents" hidden>
+                <motion.p
+                  variants={fadeUp}
+                  custom={2}
+                  className="mt-6 max-w-[48ch] text-lg text-pretty text-gray-300"
+                >
+                  {HERO_SUBTITLES.dayJ}
+                </motion.p>
+              </div>
+            </div>
+
+            <div data-uidotsh-pick="Hero · ligne de nouveautés" className="contents">
+              <div data-uidotsh-option="Sans (current)" className="contents" />
+              <div data-uidotsh-option="Chips App · Scorecard · Régie · Chrono" className="contents" hidden>
+                <HeroNewsChips />
+              </div>
+            </div>
 
             <motion.div
               variants={fadeUp}
@@ -360,7 +394,20 @@ export function Hero() {
           >
             <div className="absolute -inset-6 bg-gradient-to-br from-primary-500/10 via-accent-500/5 to-transparent rounded-3xl blur-2xl" />
 
-            <LeaderboardCard athletes={athletes} />
+            <div data-uidotsh-pick="Hero · preuve" className="contents">
+              <div data-uidotsh-option="Carte seule (current)" className="contents">
+                <LeaderboardCard athletes={athletes} />
+              </div>
+              <div data-uidotsh-option="Téléphone juge + carte" className="contents" hidden>
+                <HeroProofDuo card={<LeaderboardCard athletes={athletes} />} />
+              </div>
+              <div data-uidotsh-option="TV live seule" className="contents" hidden>
+                <HeroProofTv />
+              </div>
+              <div data-uidotsh-option="TV live + téléphone juge" className="contents" hidden>
+                <HeroProofTvPhone />
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

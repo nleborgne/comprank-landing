@@ -137,3 +137,9 @@ html {
 .glass {
   @apply bg-dark-600/60 backdrop-blur-lg border border-dark-400 rounded-xl;
 }
+
+/* PROTOTYPE #19 — échafaudage /ideas : sous Tailwind v3, `.contents` bat le
+   `[hidden]` du preflight. Retiré avec la branche. */
+[data-uidotsh-option][hidden] {
+  display: none !important;
+}

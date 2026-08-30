@@ -97,6 +97,15 @@ The homepage has been fully redesigned with:
 - **`app/actions/lead.ts`** — `next-safe-action` server action (client in `lib/safe-action.ts`). Honeypot filled → fake success, no email; the response is intentionally byte-identical to a real success so bots can't detect the trap (the client filters the Lead event from its own copy of the input instead). Otherwise sends a plain-text email via the Resend SDK: from `CompRank <contact@transactional.comprank.fr>`, to `contact@comprank.fr`, `replyTo` = lead's email, subject `Nouveau lead : {First} {Last} ({Profile})`. Missing `RESEND_API_KEY` or send failure → throws; the client shows a generic French error with a mailto fallback (never fakes success).
 - **`RESEND_API_KEY`** is required in production (Vercel env) — see `.env.example`. No rate limiting yet; the honeypot is the only spam protection (known limitation, acceptable for current traffic).
 
+### Mobile App Assets (not yet rendered)
+
+Kept on `feat/app-launch-announcement` for the homepage redesign tracked in issue #14; none of these are rendered on the site yet, the baseline is the pre-existing page.
+
+- **`components/phone-shell.tsx`** — reusable phone chassis (extracted from `JudgeScoringMockup`), takes any screen as children.
+- **`components/phone-screens.tsx`** — two screens sized for `PhoneShell`: `PhoneLeaderboardScreen` (compact animated leaderboard, takes the hero's `Athlete[]`) and `PhoneJudgeOfflineScreen` (judge scoring with the network down, the "offline resilience" claim). Imports `Athlete` and `RankChangeIndicator` from `components/hero.tsx`, which exports them for this purpose.
+- **`components/store-badges.tsx`** — App Store + Google Play badges (`public/badges/`), App Store left, equal visible heights, no CSS effects, `fbq("trackCustom", "AppBadgeClick", { platform })` in production. Links come from `IOS_APP_URL` / `ANDROID_APP_URL` in `lib/site.ts`; **the App Store ID is a placeholder** (`id0000000000`) until the app is published.
+- `components/hero.tsx` now wraps the animated leaderboard in a `LeaderboardCard` component (same markup as before, just named) so the proof can be swapped or re-framed without rewriting the hero.
+
 ### Content and Localization
 
 - All content is in French, targeting French-speaking competition organizers
@@ -116,7 +125,10 @@ app/                 # Next.js App Router pages
 
 components/          # React components
 ├── ui/             # Reusable UI components (Radix + custom)
-├── hero.tsx        # Hero section component
+├── hero.tsx        # Hero section component (exports Athlete, RankChangeIndicator)
+├── phone-shell.tsx # Phone chassis for app mockups (not rendered yet)
+├── phone-screens.tsx # Screens for PhoneShell (not rendered yet)
+├── store-badges.tsx # App Store / Google Play badges (not rendered yet)
 ├── header.tsx      # Site header/navigation
 ├── footer.tsx      # Site footer
 └── ...             # Other page sections
@@ -126,6 +138,7 @@ lib/
 
 public/             # Static assets
 ├── hero.webp       # Hero background image
+├── badges/         # Official store badges (FR)
 └── box/            # Box logo images
 ```
 

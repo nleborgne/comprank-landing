@@ -34,17 +34,11 @@ import { Card } from "@/components/ui/card";
 import { Hero } from "@/components/hero";
 import { LeadDialog } from "@/components/lead-dialog";
 import { SmartPlannerDemo } from "@/components/smart-planner-demo";
-import { JudgeScoringMockup } from "@/components/judge-scoring-mockup";
 import { JsonLd } from "@/components/json-ld";
-// PROTOTYPE #18 — sections de comparaison /ideas, à retirer après le choix.
+// PROTOTYPE #18 — sections basse fidélité de la structure A (branche prototype).
 import {
   ProtoJudgeAppSection,
   ProtoOfferTwoPanels,
-  ProtoDayJChapter,
-  ProtoHowItWorks7,
-  ProtoFeaturesGrid7,
-  ProtoCompareBlock,
-  ProtoOfferByFormat,
 } from "@/components/proto-structure";
 import { createPageMetadata, SITE_URL } from "@/lib/site";
 
@@ -304,41 +298,6 @@ function SmartPlannerSection() {
   );
 }
 
-function JudgeScoringSection() {
-  return (
-    <section id="scoring" className="section bg-dark-900">
-      <div className="container-custom">
-        <div className={`text-center mb-12 ${anim}`}>
-          <h2 className="mb-4 text-4xl md:text-5xl font-bold">
-            Le scoring passe au{" "}
-            <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">mobile</span>
-          </h2>
-          <p className="mx-auto max-w-xl text-lg text-gray-400">
-            Les juges comptent les reps et valident les scores depuis leur téléphone. Plus de fiches papier.
-          </p>
-        </div>
-
-        <div className={`flex flex-col items-center gap-10 ${anim}`}>
-          <JudgeScoringMockup />
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl w-full">
-            {[
-              { icon: <Zap className="w-5 h-5" />, text: "Compteur rapide +/−" },
-              { icon: <CheckCircle className="w-5 h-5" />, text: "Validation en un tap" },
-              { icon: <Wifi className="w-5 h-5" />, text: "Aucune app à installer" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-dark-800/60 border border-dark-600">
-                <div className="text-orange-400">{item.icon}</div>
-                <span className="text-sm text-gray-300">{item.text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function OtherFeaturesGrid() {
   const features = [
     {
@@ -547,68 +506,18 @@ export default function Page() {
     <main className="isolate">
       <JsonLd data={structuredData} />
       <Hero />
-      {/* PROTOTYPE #18 — picker /ideas : structure de page. Le hero est hors
-          comparaison (ticket #19). Retirer le wrapper après le choix. */}
-      <div data-uidotsh-pick="Structure de page" className="contents">
-        <div data-uidotsh-option="Actuelle (current)" className="contents">
-          <PrimaryCategories />
-          <TrustBar />
-          <LeaderboardSection />
-          <SmartPlannerSection />
-          <JudgeScoringSection />
-          <OtherFeaturesGrid />
-          <HowItWorksSection />
-          <FAQSection />
-          <BottomCTA />
-        </div>
-        <div data-uidotsh-option="A · Une section offre en deux volets" className="contents" hidden>
-          <PrimaryCategories />
-          <TrustBar />
-          <LeaderboardSection />
-          <SmartPlannerSection />
-          <ProtoJudgeAppSection />
-          <ProtoOfferTwoPanels />
-          <OtherFeaturesGrid />
-          <HowItWorksSection />
-          <FAQSection />
-          <BottomCTA />
-        </div>
-        <div data-uidotsh-option="B · Chapitre Jour J en tête" className="contents" hidden>
-          <PrimaryCategories />
-          <TrustBar />
-          <ProtoDayJChapter />
-          <LeaderboardSection />
-          <SmartPlannerSection />
-          <OtherFeaturesGrid />
-          <ProtoHowItWorks7 />
-          <FAQSection />
-          <BottomCTA />
-        </div>
-        <div data-uidotsh-option="C · Grille 7 + comparatif socle / offre" className="contents" hidden>
-          <PrimaryCategories />
-          <TrustBar />
-          <LeaderboardSection />
-          <SmartPlannerSection />
-          <ProtoJudgeAppSection />
-          <ProtoFeaturesGrid7 />
-          <HowItWorksSection />
-          <ProtoCompareBlock />
-          <FAQSection />
-          <BottomCTA />
-        </div>
-        <div data-uidotsh-option="D · Offre par format, haut de page" className="contents" hidden>
-          <PrimaryCategories />
-          <TrustBar />
-          <ProtoOfferByFormat />
-          <LeaderboardSection />
-          <SmartPlannerSection />
-          <ProtoJudgeAppSection tone="darker" />
-          <OtherFeaturesGrid />
-          <HowItWorksSection />
-          <FAQSection />
-          <BottomCTA />
-        </div>
-      </div>
+      {/* PROTOTYPE #18 — structure A retenue le 2026-08-30 : un bloc « offre à
+          part » ajouté après l'app juge, rien d'autre ne bouge. */}
+      <PrimaryCategories />
+      <TrustBar />
+      <LeaderboardSection />
+      <SmartPlannerSection />
+      <ProtoJudgeAppSection />
+      <ProtoOfferTwoPanels />
+      <OtherFeaturesGrid />
+      <HowItWorksSection />
+      <FAQSection />
+      <BottomCTA />
     </main>
   );
 }

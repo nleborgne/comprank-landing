@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/footer";
@@ -122,8 +121,6 @@ export default function RootLayout({
         {children}
         <Footer />
         <MetaPixel />
-        {/* PROTOTYPE #18 — toolbar /ideas, à retirer après le choix. */}
-        <Script src="https://ui.sh/ui-picker.js" />
       </body>
     </html>
   );

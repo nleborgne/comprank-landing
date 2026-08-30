@@ -36,6 +36,16 @@ import { LeadDialog } from "@/components/lead-dialog";
 import { SmartPlannerDemo } from "@/components/smart-planner-demo";
 import { JudgeScoringMockup } from "@/components/judge-scoring-mockup";
 import { JsonLd } from "@/components/json-ld";
+// PROTOTYPE #18 — sections de comparaison /ideas, à retirer après le choix.
+import {
+  ProtoJudgeAppSection,
+  ProtoOfferTwoPanels,
+  ProtoDayJChapter,
+  ProtoHowItWorks7,
+  ProtoFeaturesGrid7,
+  ProtoCompareBlock,
+  ProtoOfferByFormat,
+} from "@/components/proto-structure";
 import { createPageMetadata, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = createPageMetadata({
@@ -537,15 +547,68 @@ export default function Page() {
     <main className="isolate">
       <JsonLd data={structuredData} />
       <Hero />
-      <PrimaryCategories />
-      <TrustBar />
-      <LeaderboardSection />
-      <SmartPlannerSection />
-      <JudgeScoringSection />
-      <OtherFeaturesGrid />
-      <HowItWorksSection />
-      <FAQSection />
-      <BottomCTA />
+      {/* PROTOTYPE #18 — picker /ideas : structure de page. Le hero est hors
+          comparaison (ticket #19). Retirer le wrapper après le choix. */}
+      <div data-uidotsh-pick="Structure de page" className="contents">
+        <div data-uidotsh-option="Actuelle (current)" className="contents">
+          <PrimaryCategories />
+          <TrustBar />
+          <LeaderboardSection />
+          <SmartPlannerSection />
+          <JudgeScoringSection />
+          <OtherFeaturesGrid />
+          <HowItWorksSection />
+          <FAQSection />
+          <BottomCTA />
+        </div>
+        <div data-uidotsh-option="A · Une section offre en deux volets" className="contents" hidden>
+          <PrimaryCategories />
+          <TrustBar />
+          <LeaderboardSection />
+          <SmartPlannerSection />
+          <ProtoJudgeAppSection />
+          <ProtoOfferTwoPanels />
+          <OtherFeaturesGrid />
+          <HowItWorksSection />
+          <FAQSection />
+          <BottomCTA />
+        </div>
+        <div data-uidotsh-option="B · Chapitre Jour J en tête" className="contents" hidden>
+          <PrimaryCategories />
+          <TrustBar />
+          <ProtoDayJChapter />
+          <LeaderboardSection />
+          <SmartPlannerSection />
+          <OtherFeaturesGrid />
+          <ProtoHowItWorks7 />
+          <FAQSection />
+          <BottomCTA />
+        </div>
+        <div data-uidotsh-option="C · Grille 7 + comparatif socle / offre" className="contents" hidden>
+          <PrimaryCategories />
+          <TrustBar />
+          <LeaderboardSection />
+          <SmartPlannerSection />
+          <ProtoJudgeAppSection />
+          <ProtoFeaturesGrid7 />
+          <HowItWorksSection />
+          <ProtoCompareBlock />
+          <FAQSection />
+          <BottomCTA />
+        </div>
+        <div data-uidotsh-option="D · Offre par format, haut de page" className="contents" hidden>
+          <PrimaryCategories />
+          <TrustBar />
+          <ProtoOfferByFormat />
+          <LeaderboardSection />
+          <SmartPlannerSection />
+          <ProtoJudgeAppSection tone="darker" />
+          <OtherFeaturesGrid />
+          <HowItWorksSection />
+          <FAQSection />
+          <BottomCTA />
+        </div>
+      </div>
     </main>
   );
 }

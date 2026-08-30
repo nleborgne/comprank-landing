@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import {
-  ArrowRight,
   Star,
   Medal,
   Trophy,
@@ -14,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { LeadDialog } from "@/components/lead-dialog";
+import { LeadButton } from "@/components/lead-button";
 
 export interface Athlete {
   name: string;
@@ -306,12 +305,11 @@ export function Hero() {
               custom={3}
               className="flex flex-col sm:flex-row gap-3 mt-8"
             >
-              <LeadDialog>
-                <Button size="lg">
-                  Démarrer gratuitement
-                  <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                </Button>
-              </LeadDialog>
+              <LeadButton
+                label="Démarrer gratuitement"
+                size="lg"
+                showArrow
+              />
               <Button asChild size="lg" variant="outline">
                 <Link href="#formats">Explorer les formats</Link>
               </Button>

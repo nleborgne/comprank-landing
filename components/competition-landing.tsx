@@ -1,5 +1,6 @@
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, Check, ChevronRight } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import {
   Accordion,
@@ -10,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/json-ld";
-import { LeadDialog } from "@/components/lead-dialog";
+import { LeadButton } from "@/components/lead-button";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export type LandingFeature = {
@@ -51,6 +52,7 @@ type CompetitionLandingProps = {
   relatedHref: string;
   relatedLabel: string;
   relatedDescription: string;
+  dayOfEventOffer?: ReactNode;
 };
 
 export function CompetitionLanding({
@@ -75,6 +77,7 @@ export function CompetitionLanding({
   relatedHref,
   relatedLabel,
   relatedDescription,
+  dayOfEventOffer,
 }: CompetitionLandingProps) {
   const pageUrl = `${SITE_URL}${path}`;
   const structuredData = {
@@ -155,12 +158,7 @@ export function CompetitionLanding({
               ))}
             </ul>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <LeadDialog>
-                <Button size="lg">
-                  {primaryCta}
-                  <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                </Button>
-              </LeadDialog>
+              <LeadButton label={primaryCta} size="lg" showArrow />
               <Button asChild size="lg" variant="outline">
                 <Link href="#fonctionnalites">Voir les fonctionnalités</Link>
               </Button>
@@ -233,6 +231,8 @@ export function CompetitionLanding({
           </dl>
         </div>
       </section>
+
+      {dayOfEventOffer}
 
       <section className="bg-dark-900 py-16 sm:py-24">
         <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[2fr_3fr] lg:px-8">
@@ -319,11 +319,11 @@ export function CompetitionLanding({
               Créez votre événement et centralisez toute l’organisation dans
               CompRank.
             </p>
-            <LeadDialog>
-              <Button size="lg" variant="outline">
-                Démarrer gratuitement
-              </Button>
-            </LeadDialog>
+            <LeadButton
+              label="Démarrer gratuitement"
+              size="lg"
+              variant="outline"
+            />
           </div>
         </div>
       </section>

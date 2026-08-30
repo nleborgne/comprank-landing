@@ -256,6 +256,123 @@ function LeaderboardCard({ athletes }: { athletes: Athlete[] }) {
   );
 }
 
+type HeroVariantProps = {
+  athletes: Athlete[];
+  subtitle: string;
+  chips?: boolean;
+  proof: "card" | "duo" | "tv" | "tvPhone";
+};
+
+/** Les deux colonnes du hero, paramétrées pour le tour /ideas du ticket #19. */
+function HeroColumns({ athletes, subtitle, chips, proof }: HeroVariantProps) {
+  const card = <LeaderboardCard athletes={athletes} />;
+  return (
+    <>
+      <motion.div initial={false} animate="visible" className="max-w-xl">
+        <motion.p
+          variants={fadeUp}
+          custom={0}
+          className="font-mono text-base uppercase tracking-wide text-primary-400 sm:text-sm"
+        >
+          Lâchez les tableurs. Scorez en direct.
+        </motion.p>
+        <motion.h1
+          variants={fadeUp}
+          custom={1}
+          className="mt-6 max-w-[24ch] text-4xl font-semibold tracking-tight text-balance text-white md:text-5xl lg:text-6xl"
+        >
+          Le logiciel pour organiser vos compétitions CrossFit et HYROX
+        </motion.h1>
+
+        <motion.p
+          variants={fadeUp}
+          custom={2}
+          className="mt-6 max-w-[48ch] text-lg text-pretty text-gray-300"
+        >
+          {subtitle}
+        </motion.p>
+
+        {chips && <HeroNewsChips />}
+
+        <motion.div
+          variants={fadeUp}
+          custom={3}
+          className="flex flex-col sm:flex-row gap-3 mt-8"
+        >
+          <LeadDialog>
+            <Button size="lg">
+              Démarrer gratuitement
+              <ArrowRight data-icon="inline-end" aria-hidden="true" />
+            </Button>
+          </LeadDialog>
+          <Button asChild size="lg" variant="outline">
+            <Link href="#formats">Explorer les formats</Link>
+          </Button>
+        </motion.div>
+
+        <motion.div
+          variants={fadeUp}
+          custom={4}
+          className="mt-10 flex items-center gap-6"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex -space-x-2">
+              {[1, 2, 3].map((id) => (
+                <Image
+                  width={36}
+                  height={36}
+                  key={id}
+                  src={`/box/box-${id}.webp`}
+                  alt=""
+                  className="size-9 rounded-full object-cover outline outline-2 outline-dark-600"
+                />
+              ))}
+            </div>
+            <div>
+              <div className="flex">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star
+                    key={s}
+                    className="size-3.5 text-primary-500 fill-primary-500"
+                  />
+                ))}
+              </div>
+              <p className="text-base text-gray-400 sm:text-sm">
+                50+ salles en France
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        variants={fadeInRight}
+        initial={false}
+        animate="visible"
+        className="relative"
+      >
+        <div className="absolute -inset-6 bg-gradient-to-br from-primary-500/10 via-accent-500/5 to-transparent rounded-3xl blur-2xl" />
+        {proof === "card" && card}
+        {proof === "duo" && <HeroProofDuo card={card} />}
+        {proof === "tv" && <HeroProofTv />}
+        {proof === "tvPhone" && <HeroProofTvPhone />}
+      </motion.div>
+    </>
+  );
+}
+
+// PROTOTYPE #19 — un seul groupe /ideas : la toolbar ui.sh ne pilote que le
+// premier groupe d'une page, donc les trois décisions (sous-titre, ligne de
+// nouveautés, preuve) sont comparées en combinaisons.
+const HERO_OPTIONS: { label: string; props: Omit<HeroVariantProps, "athletes"> }[] = [
+  { label: "Actuelle (current)", props: { subtitle: HERO_SUBTITLES.current, proof: "card" } },
+  { label: "A · Juge · téléphone + carte · chips", props: { subtitle: HERO_SUBTITLES.judge, chips: true, proof: "duo" } },
+  { label: "B · Juge · téléphone + carte, sans chips", props: { subtitle: HERO_SUBTITLES.judge, proof: "duo" } },
+  { label: "C · Jour J · TV live seule", props: { subtitle: HERO_SUBTITLES.dayJ, proof: "tv" } },
+  { label: "D · Jour J · TV live + téléphone · chips", props: { subtitle: HERO_SUBTITLES.dayJ, chips: true, proof: "tvPhone" } },
+  { label: "E · Sous-titre actuel + chips, carte seule", props: { subtitle: HERO_SUBTITLES.current, chips: true, proof: "card" } },
+];
+
 export function Hero() {
   const athletes = useAnimatedScores();
 
@@ -278,137 +395,18 @@ export function Hero() {
 
       <div className="container-custom relative z-10 py-24 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <motion.div
-            initial={false}
-            animate="visible"
-            className="max-w-xl"
-          >
-            <motion.p
-              variants={fadeUp}
-              custom={0}
-              className="font-mono text-base uppercase tracking-wide text-primary-400 sm:text-sm"
-            >
-              Lâchez les tableurs. Scorez en direct.
-            </motion.p>
-            <motion.h1
-              variants={fadeUp}
-              custom={1}
-              className="mt-6 max-w-[24ch] text-4xl font-semibold tracking-tight text-balance text-white md:text-5xl lg:text-6xl"
-            >
-              Le logiciel pour organiser vos compétitions CrossFit et HYROX
-            </motion.h1>
-
-            <div data-uidotsh-pick="Hero · récit du sous-titre" className="contents">
-              <div data-uidotsh-option="Outil unique (current)" className="contents">
-                <motion.p
-                  variants={fadeUp}
-                  custom={2}
-                  className="mt-6 max-w-[48ch] text-lg text-pretty text-gray-300"
-                >
-                  {HERO_SUBTITLES.current}
-                </motion.p>
+          <div data-uidotsh-pick="Hero · sous-titre, nouveautés et preuve" className="contents">
+            {HERO_OPTIONS.map((o, i) => (
+              <div
+                key={o.label}
+                data-uidotsh-option={o.label}
+                className="contents"
+                hidden={i !== 0}
+              >
+                <HeroColumns athletes={athletes} {...o.props} />
               </div>
-              <div data-uidotsh-option="Le juge, même sans réseau" className="contents" hidden>
-                <motion.p
-                  variants={fadeUp}
-                  custom={2}
-                  className="mt-6 max-w-[48ch] text-lg text-pretty text-gray-300"
-                >
-                  {HERO_SUBTITLES.judge}
-                </motion.p>
-              </div>
-              <div data-uidotsh-option="Le jour J tient" className="contents" hidden>
-                <motion.p
-                  variants={fadeUp}
-                  custom={2}
-                  className="mt-6 max-w-[48ch] text-lg text-pretty text-gray-300"
-                >
-                  {HERO_SUBTITLES.dayJ}
-                </motion.p>
-              </div>
-            </div>
-
-            <div data-uidotsh-pick="Hero · ligne de nouveautés" className="contents">
-              <div data-uidotsh-option="Sans (current)" className="contents" />
-              <div data-uidotsh-option="Chips App · Scorecard · Régie · Chrono" className="contents" hidden>
-                <HeroNewsChips />
-              </div>
-            </div>
-
-            <motion.div
-              variants={fadeUp}
-              custom={3}
-              className="flex flex-col sm:flex-row gap-3 mt-8"
-            >
-              <LeadDialog>
-                <Button size="lg">
-                  Démarrer gratuitement
-                  <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                </Button>
-              </LeadDialog>
-              <Button asChild size="lg" variant="outline">
-                <Link href="#formats">Explorer les formats</Link>
-              </Button>
-            </motion.div>
-
-            <motion.div
-              variants={fadeUp}
-              custom={4}
-              className="mt-10 flex items-center gap-6"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3].map((id) => (
-                    <Image
-                      width={36}
-                      height={36}
-                      key={id}
-                      src={`/box/box-${id}.webp`}
-                      alt=""
-                      className="size-9 rounded-full object-cover outline outline-2 outline-dark-600"
-                    />
-                  ))}
-                </div>
-                <div>
-                  <div className="flex">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <Star
-                        key={s}
-                        className="size-3.5 text-primary-500 fill-primary-500"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-base text-gray-400 sm:text-sm">
-                    50+ salles en France
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            variants={fadeInRight}
-            initial={false}
-            animate="visible"
-            className="relative"
-          >
-            <div className="absolute -inset-6 bg-gradient-to-br from-primary-500/10 via-accent-500/5 to-transparent rounded-3xl blur-2xl" />
-
-            <div data-uidotsh-pick="Hero · preuve" className="contents">
-              <div data-uidotsh-option="Carte seule (current)" className="contents">
-                <LeaderboardCard athletes={athletes} />
-              </div>
-              <div data-uidotsh-option="Téléphone juge + carte" className="contents" hidden>
-                <HeroProofDuo card={<LeaderboardCard athletes={athletes} />} />
-              </div>
-              <div data-uidotsh-option="TV live seule" className="contents" hidden>
-                <HeroProofTv />
-              </div>
-              <div data-uidotsh-option="TV live + téléphone juge" className="contents" hidden>
-                <HeroProofTvPhone />
-              </div>
-            </div>
-          </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

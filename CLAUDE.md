@@ -49,6 +49,8 @@ The landing page showcases:
 
 - Modern hero section with animated gradients and call-to-action
 - Interactive live leaderboard demonstration with real-time updates
+- Offline-capable judge app and Scorecard workflow, with App Store and Google Play badges
+- On-site "Le jour J" services: Régie live + TV live for FUNCTIONAL and RFID timing for HYROX
 - Advanced competition planning and scheduling features
 - Registration management with intelligent waitlist functionality
 - Real-time scoring system with progress tracking
@@ -91,11 +93,25 @@ The homepage has been fully redesigned with:
 
 ### Lead Capture (CTA form)
 
-- All 6 "Démarrer / Démarrer gratuitement" CTAs (header desktop + mobile menu, hero, homepage bottom CTA, both competition landings) open a lead-capture modal instead of linking to `app.comprank.fr`. The only remaining outbound link to the app is a discreet one on the modal's success screen.
+- All "Démarrer / Démarrer gratuitement" and "Parler de votre jour J" CTAs open the same lead-capture modal instead of linking to `app.comprank.fr`. The only remaining outbound link to the app is a discreet one on the modal's success screen.
+- **`components/lead-button.tsx`** — standard controlled trigger used by the hero, homepage CTAs and competition landings. Keeping the button and its `LeadDialog` in one client boundary avoids Radix trigger-ID hydration mismatches when several dialogs occur on one page; it exposes `aria-haspopup="dialog"` and `aria-expanded`. The header keeps its own controlled instance because its mobile trigger unmounts when the menu closes.
 - **`components/lead-dialog.tsx`** — client component. Two usage modes: wrap the trigger as children (`DialogTrigger asChild`), or controlled via `open`/`onOpenChange` (used by the header so the dialog survives the mobile menu unmounting). Fields: first/last name, email, optional phone, two required segmented-pill radio groups (profile: coach/box-owner/other; timeline: 3-months/6-12-months/considering/no) with no default selection, plus an off-screen honeypot (`website`). Form state resets on reopen. Visible inputs carry `maxLength` mirroring `LEAD_MAX_LENGTHS` (the phone field has no error UI, so the browser cap is what prevents a silent dead submit); the honeypot has no `maxLength` so bots can still fill it. Network/execution failures (empty hook result) show the same generic error via a local `failed` flag.
 - **`lib/lead-schema.ts`** — shared zod schema (client + server), French error messages, pill option lists, and label helpers for the email body. Exports `LEAD_MAX_LENGTHS` (max bounds on all string fields, enforced in the schema with French messages — including the honeypot, whose only cap is the schema since its input has no `maxLength` — and mirrored as input `maxLength` on visible fields) and `isHoneypotFilled` (single definition of what counts as a bot submission, used by both the server action and the Lead pixel gate).
 - **`app/actions/lead.ts`** — `next-safe-action` server action (client in `lib/safe-action.ts`). Honeypot filled → fake success, no email; the response is intentionally byte-identical to a real success so bots can't detect the trap (the client filters the Lead event from its own copy of the input instead). Otherwise sends a plain-text email via the Resend SDK: from `CompRank <contact@transactional.comprank.fr>`, to `contact@comprank.fr`, `replyTo` = lead's email, subject `Nouveau lead : {First} {Last} ({Profile})`. Missing `RESEND_API_KEY` or send failure → throws; the client shows a generic French error with a mailto fallback (never fakes success).
 - **`RESEND_API_KEY`** is required in production (Vercel env) — see `.env.example`. No rate limiting yet; the honeypot is the only spam protection (known limitation, acceptable for current traffic).
+
+### App, Scorecard and On-site Services (issue #14)
+
+The homepage now follows three narratives while preserving the existing hero, five-feature grid and six-step flow: App juge + Scorecard, Régie live + TV live, and RFID timing for HYROX. The latter two are explicitly separate on-site services; the software remains free for organizers.
+
+- **`components/phone-shell.tsx`** — reusable phone chassis (extracted from `JudgeScoringMockup`), takes any screen as children.
+- **`components/phone-screens.tsx`** — screens sized for `PhoneShell`. `PhoneJudgeOfflineScreen` is rendered as decorative proof in the App juge section; `PhoneLeaderboardScreen` remains available but is not rendered.
+- **`components/app-judge-section.tsx`** — production App juge + Scorecard section. It explains the offline queue, keeps the web interface as the no-installation fallback, and is the page's only store-badge location.
+- **`components/day-of-event.tsx`** — production homepage section with separate Régie live + TV live and RFID timing panels, plus compact format-specific blocks used by both competition landings. Visual mockups are decorative (`aria-hidden`); the adjacent prose carries the same facts for assistive technology.
+- **`components/store-badges.tsx`** — App Store + Google Play badges (`public/badges/`), App Store left, equal visible heights, no CSS effects, `fbq("trackCustom", "AppBadgeClick", { platform })` in production. Links come from `IOS_APP_URL` / `ANDROID_APP_URL` in `lib/site.ts`; both point to the published store listings.
+- `components/hero.tsx` now wraps the animated leaderboard in a `LeaderboardCard` component (same markup as before, just named) so the proof can be swapped or re-framed without rewriting the hero.
+- `components/competition-landing.tsx` accepts an optional `dayOfEventOffer` slot after the feature grid. CrossFit renders the Régie live + TV live offer; HYROX renders the RFID timing offer. Both use the existing lead form with no extra field.
+- The header and footer expose a single "Le jour J" link to `/#offre`. The homepage FAQ documents offline Régie behavior and RFID timing. `/llms.txt`, `SITE_DESCRIPTION` and the homepage JSON-LD feature list mirror the new offer.
 
 ### Content and Localization
 
@@ -116,7 +132,13 @@ app/                 # Next.js App Router pages
 
 components/          # React components
 ├── ui/             # Reusable UI components (Radix + custom)
-├── hero.tsx        # Hero section component
+├── hero.tsx        # Hero section component (exports Athlete, RankChangeIndicator)
+├── app-judge-section.tsx # App juge + Scorecard homepage narrative
+├── day-of-event.tsx # Homepage and landing blocks for on-site services
+├── lead-button.tsx # Controlled lead-dialog trigger used outside the header
+├── phone-shell.tsx # Phone chassis for app mockups
+├── phone-screens.tsx # Screens for PhoneShell
+├── store-badges.tsx # App Store / Google Play badges
 ├── header.tsx      # Site header/navigation
 ├── footer.tsx      # Site footer
 └── ...             # Other page sections
@@ -126,6 +148,7 @@ lib/
 
 public/             # Static assets
 ├── hero.webp       # Hero background image
+├── badges/         # Official store badges (FR)
 └── box/            # Box logo images
 ```
 

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 const navigation = [
   { href: "/competition-crossfit", label: "CrossFit" },
   { href: "/competition-hyrox", label: "HYROX" },
+  { href: "/#offre", label: "Le jour J" },
   { href: "/#features", label: "Fonctionnalités" },
   { href: "/#faq", label: "FAQ" },
 ];

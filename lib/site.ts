@@ -5,11 +5,8 @@ export const SITE_URL = "https://www.comprank.fr";
 export const APP_URL = "https://app.comprank.fr";
 
 // Liens vers les fiches store de l'app mobile CompRank.
-// L'ID App Store est un PLACEHOLDER jusqu'à la publication de l'app. La landing
-// peut être déployée avant : remplacer uniquement cette constante le jour de la
-// publication. L'URL Play est déjà définitive.
 export const IOS_APP_URL =
-  "https://apps.apple.com/fr/app/comprank/id0000000000";
+  "https://apps.apple.com/fr/app/comprank/id6803938343";
 export const ANDROID_APP_URL =
   "https://play.google.com/store/apps/details?id=com.comprank.comprank";
 
